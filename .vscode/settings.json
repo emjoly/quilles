@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "lunaire.sln"
+    "dotnet.defaultSolution": "quilles.sln"
 }
