@@ -25,6 +25,7 @@ public class Boules : MonoBehaviour
         if (collision.gameObject.CompareTag("RemettreBoulePositionInitial"))
         {
             Invoke("ResetPosition", resetDelay);
+            GameController.instance.BallThrown();
         }
     }
 

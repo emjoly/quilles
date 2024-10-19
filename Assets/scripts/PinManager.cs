@@ -6,33 +6,37 @@ public class PinManager : MonoBehaviour
 {
     public List<GameObject> pins; // List to hold all pin GameObjects
     public float resetDelay = 7.0f; // Delay before resetting pins
+    private int totalPins;  // nmb de pins
+    private int knockedDownPins; // compteur de pins tombées
 
     private void Start()
     {
         // Find all pin GameObjects in the scene and add them to the list
         pins = new List<GameObject>(GameObject.FindGameObjectsWithTag("Pin"));
+        totalPins = pins.Count;
     }
 
     public void CheckPins()
     {
+        knockedDownPins = 0;
         // Check if all pins are down
         foreach (GameObject pin in pins)
         {
-            if (pin.activeSelf) // If any pin is active (standing)
+            if (!pin.activeSelf) // si la pin est tombée
             {
-                return; // If at least one pin is standing, exit
+                knockedDownPins++;
             }
         }
 
-        // If all pins are down, start reset process
-        StartCoroutine(ResetPins());
+       // si toutes le pins sont tombées
+        if (knockedDownPins == totalPins)
+        {
+            GameController.instance.AllPinsDown();
+        }
     }
 
-    private IEnumerator ResetPins()
+    public void ResetPins()
     {
-        // Wait for the specified delay
-        yield return new WaitForSeconds(resetDelay);
-
         // Reset all pins' positions
         foreach (GameObject pin in pins)
         {
