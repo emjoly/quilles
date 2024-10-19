@@ -81,7 +81,7 @@ public class GameController : MonoBehaviour
         }
 
         // Reset the game after a short delay
-        StartCoroutine(ResetGame());
+        StartCoroutine(ResetGame()); // This triggers the pin reset after a delay
     }
 
     private IEnumerator ResetGame()

@@ -5,7 +5,6 @@ using UnityEngine;
 public class PinManager : MonoBehaviour
 {
     public List<GameObject> pins; // List to hold all pin GameObjects
-    public float resetDelay = 7.0f; // Delay before resetting pins
     private int totalPins;  // nmb de pins
     private int knockedDownPins; // compteur de pins tombées
 
@@ -40,9 +39,8 @@ public class PinManager : MonoBehaviour
         // Reset all pins' positions
         foreach (GameObject pin in pins)
         {
-            pin.SetActive(true); // Set pin active
-            pin.transform.position = new Vector3(pin.transform.position.x, 1.0f, pin.transform.position.z); // Reset to original position
-            pin.transform.rotation = Quaternion.identity; // Reset rotation if needed
+            Pins pinScript = pin.GetComponent<Pins>();
+            pinScript.ResetPosition(); // Reset pin via its script
         }
     }
 }
