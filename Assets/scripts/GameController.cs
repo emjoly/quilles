@@ -6,17 +6,19 @@ using TMPro;
 public class GameController : MonoBehaviour
 {
     public static GameController instance;
-    public PinManager pinManager; // Ref au PinManager script
-    public TextMeshProUGUI gameMessageText; // Text UI Strike, Spare
-    public TextMeshProUGUI scoreText; // Text UI  score
+    public PinManager pinManager; 
+    public TextMeshProUGUI gameMessageText; 
+    public TextMeshProUGUI scoreText; 
+    public Boules boules;
 
-    private int throwCount = 0; // track cmb de lancer ont été fait
-    private int currentScore = 0; // Current score
+    private int throwCount = 0;
+    private int currentScore = 0;
     private bool gameActive = true; 
+    private float resetBallTimeout = 5.0f;
+    private float lastPinCheckTime;
 
     private void Awake()
     {
-        // Singleton pattern for GameController
         if (instance == null)
         {
             instance = this;
@@ -30,58 +32,59 @@ public class GameController : MonoBehaviour
     private void Start()
     {
         StartNewGame();
+        lastPinCheckTime = Time.time; // Initialize the last pin check time
     }
 
-    // appeler quand joueuer lance la boule
     public void BallThrown()
     {
         if (!gameActive) return;
 
         throwCount++;
+        boules.StartPlay();
 
-        // Checker le nmb de lancer
+        // Check number of throws
         if (throwCount == 1)
         {
-            // premier lancer, check pour strike
             pinManager.CheckPins();
         }
         else if (throwCount == 2)
         {
-            // 2e lancer, check pour spare
             pinManager.CheckPins();
             EndGame();
         }
+
+        lastPinCheckTime = Time.time;
     }
 
-    // appeler quand toutes les pins sont tombées
-    public void AllPinsDown()
+public void AllPinsDown()
+{
+    lastPinCheckTime = Time.time;
+    if (throwCount == 1)
     {
-        if (throwCount == 1)
-        {
-            // Strike si cets le premier lancer
-            gameMessageText.text = "Strike!";
-            currentScore += 10; // score
-            EndGame();
-        }
-        else if (throwCount == 2)
-        {
-            // Spare si cest le 2e lancer
-            gameMessageText.text = "Spare!";
-            currentScore += 10; // Add score for spare
-            EndGame();
-        }
+        gameMessageText.text = "Strike!";
+        currentScore += 10;
+        boules.ResetPosition(); 
+        pinManager.ResetPins();
+        EndGame();
     }
+    else if (throwCount == 2)
+    {
+        gameMessageText.text = "Spare!";
+        currentScore += 10;
+        EndGame();
+    }
+}
+
 
     private void EndGame()
     {
-        // Display score if no strike or spare
         if (throwCount == 2 && gameMessageText.text == "")
         {
-            gameMessageText.text = "Score: " + currentScore;
+            
         }
 
         // Reset the game after a short delay
-        StartCoroutine(ResetGame()); // This triggers the pin reset after a delay
+        StartCoroutine(ResetGame());
     }
 
     private IEnumerator ResetGame()
@@ -102,5 +105,15 @@ public class GameController : MonoBehaviour
         throwCount = 0;
         gameActive = true;
         gameMessageText.text = "";
+        currentScore = 0; // Reset score
+    }
+
+    private void Update()
+    {
+        // Check if we need to reset the ball based on time
+        if (boules.IsInPlay() && Time.time - lastPinCheckTime > resetBallTimeout)
+        {
+            boules.ResetPosition();
+        }
     }
 }
