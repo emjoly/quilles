@@ -83,7 +83,6 @@ public void AllPinsDown()
             
         }
 
-        // Reset the game after a short delay
         StartCoroutine(ResetGame());
     }
 
@@ -91,26 +90,22 @@ public void AllPinsDown()
     {
         gameActive = false;
 
-        // Wait for a few seconds to display the message
         yield return new WaitForSeconds(3.0f);
 
-        // Reset everything for the next game
         pinManager.ResetPins();
         StartNewGame();
     }
 
     private void StartNewGame()
     {
-        // Reset throw count, game state, and message text
         throwCount = 0;
         gameActive = true;
         gameMessageText.text = "";
-        currentScore = 0; // Reset score
+        currentScore = 0;
     }
 
     private void Update()
     {
-        // Check if we need to reset the ball based on time
         if (boules.IsInPlay() && Time.time - lastPinCheckTime > resetBallTimeout)
         {
             boules.ResetPosition();
